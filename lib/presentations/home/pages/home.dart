@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weather/common/widgets/appbar/app_bar.dart';
 import 'package:weather/core/configs/theme/app_colors.dart';
+import 'package:weather/presentations/home/bloc/time_cubit.dart';
 import 'package:weather/presentations/home/bloc/weather_cubit.dart';
 import 'package:weather/presentations/home/bloc/weather_state.dart';
 import 'package:weather/presentations/home/widgets/weather_hourly.dart';
@@ -12,8 +13,11 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => WeatherCubit()..getData(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => WeatherCubit()..getData()),
+        BlocProvider(create: (context) => TimeCubit()),
+      ],
       child: Scaffold(
         appBar: BasicAppbar(
           hideBack: true,

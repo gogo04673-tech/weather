@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
+import 'package:weather/core/configs/assets/app_lottie.dart';
 import 'package:weather/core/configs/theme/app_colors.dart';
 import 'package:weather/core/functions/get_temperature_feels_like_range.dart';
+import 'package:weather/core/functions/get_time_hourly.dart';
 import 'package:weather/core/functions/weather_code.dart';
+import 'package:weather/presentations/home/bloc/time_cubit.dart';
+import 'package:weather/presentations/home/bloc/time_state.dart';
 import 'package:weather/presentations/home/bloc/weather_cubit.dart';
 import 'package:weather/presentations/home/bloc/weather_state.dart';
 
@@ -22,84 +27,150 @@ class WeatherHourly extends StatelessWidget {
         }
 
         if (state is WeatherLoad) {
-          return Container(
-            height: 230,
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-            margin: const EdgeInsets.only(top: 28),
-            alignment: Alignment.topLeft,
+          List<String>? hours;
+          return GestureDetector(
+            onTap: () {
+              // var result = setHoursWithSunriseAndSunset(
+              //   time,
+              //   state.weather.daily!.sunrise,
+              //   state.weather.daily!.sunset,
+              //   24,
+              // );
+              // print("result: ${result}");
+              if (hours != null) {
+                var result = weatherCodeList(
+                  hours!,
+                  state.weather.hourly!.weathercode,
+                  state.weather.daily!.sunrise,
+                  state.weather.daily!.sunset,
+                );
+                print("===============");
+                print(result);
+              }
+            },
+            child: Container(
+              height: 230,
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+              margin: const EdgeInsets.only(top: 28),
+              alignment: Alignment.topLeft,
 
-            decoration: BoxDecoration(
-              color: AppColors.blue.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(20),
-            ),
+              decoration: BoxDecoration(
+                color: AppColors.blue.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(20),
+              ),
 
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  getWeatherAllDescription(
-                    state.weather.hourly!.apparentTemperature,
-                    state.weather.hourly!.weathercode,
-                  ), // "Partly cloudy. Low 18C.",
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    getWeatherAllDescription(
+                      state.weather.hourly!.apparentTemperature,
+                      state.weather.hourly!.weathercode,
+                    ), // "Partly cloudy. Low 18C.",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
 
-                const SizedBox(height: 8),
+                  const SizedBox(height: 8),
 
-                // line
-                const Expanded(
-                  child: Divider(color: Colors.grey, thickness: 0.5),
-                ),
-
-                /// * Hour             ==> 01:00
-                /// * image weather    ==> ⛅
-                /// * temperature hour ==> 21\u00B0
-                Container(
-                  height: 100,
-                  margin: const EdgeInsets.only(top: 10),
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(width: 5),
-                    itemCount: state.weather.hourly!.temperature2M.length,
-                    itemBuilder: (context, i) {
-                      return Column(
-                        children: [
-                          Text(
-                            "${((time.hour + i) % 24).toString().padLeft(2, "0")}:00",
-                            style: TextStyle(
-                              color: Colors.grey.withValues(alpha: 0.6),
-                            ),
-                          ),
-
-                          // image
-                          Container(
-                            margin: const EdgeInsets.only(top: 5, bottom: 6),
-                            child: getWeatherLottie(
-                              state.weather.hourly!.weathercode[i],
-                            ),
-                          ),
-
-                          // text temperature
-                          Text(
-                            "${state.weather.hourly!.temperature2M[i].round()}\u00B0",
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      );
-                    },
+                  // line
+                  const Expanded(
+                    child: Divider(color: Colors.grey, thickness: 0.5),
                   ),
-                ),
 
-                const SizedBox(height: 50),
-              ],
+                  /// * Hour             ==> 01:00 // sunrise / sunset
+                  /// * image weather    ==> ⛅ // ☀️ / sunset
+                  /// * temperature hour ==> 21\u00B0 // no thing
+                  Container(
+                    height: 100,
+                    margin: const EdgeInsets.only(top: 10),
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(width: 5),
+                      itemCount: state.weather.hourly!.temperature2M.length + 2,
+                      itemBuilder: (context, i) {
+                        return Column(
+                          // ! this is hour
+                          children: [
+                            BlocBuilder<TimeCubit, ClockState>(
+                              builder: (context, time) {
+                                hours = setHoursWithSunriseAndSunset(
+                                  time.currentTime,
+                                  state.weather.daily!.sunrise,
+                                  state.weather.daily!.sunset,
+                                  24,
+                                );
+                                return Container(
+                                  margin: const EdgeInsets.only(top: 2),
+                                  //color: Colors.green,
+                                  child: Text(
+                                    hours![i],
+                                    style: TextStyle(
+                                      height: 0.6,
+                                      color: const Color.fromARGB(
+                                        255,
+                                        153,
+                                        177,
+                                        187,
+                                      ).withOpacity(0.7),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+
+                            // image
+                            if (hours != null)
+                              Container(
+                                margin:
+                                    int.tryParse(hours![i].split(":")[1]) == 00
+                                    ? const EdgeInsets.only(top: 2.8)
+                                    : const EdgeInsets.only(top: 10),
+                                alignment: Alignment.bottomCenter,
+                                child: getWeatherLottie(
+                                  weatherCodeList(
+                                    hours!,
+                                    state.weather.hourly!.weathercode,
+                                    state.weather.daily!.sunrise,
+                                    state.weather.daily!.sunset,
+                                  )[i],
+                                  context.watch<TimeCubit>().timeNow!,
+                                  state.weather.daily!.sunrise,
+                                  state.weather.daily!.sunset,
+                                ),
+                              ),
+                            // Center(
+                            //   child: getWeatherLottie(
+                            //     weatherCodeList(
+                            //       hours!,
+                            //       state.weather.hourly!.weathercode,
+                            //       state.weather.daily!.sunrise,
+                            //       state.weather.daily!.sunset,
+                            //     )[i],
+                            //   ),
+                            // ),
+
+                            // text temperature
+                            // Text(
+                            //   "${state.weather.hourly!.temperature2M[i].round()}\u00B0",
+                            //   style: const TextStyle(
+                            //     color: Colors.white,
+                            //     fontWeight: FontWeight.bold,
+                            //   ),
+                            // ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+
+                  const SizedBox(height: 50),
+                ],
+              ),
             ),
           );
         }
