@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -7,6 +8,9 @@ import 'package:weather/services_locator.dart';
 
 class WeatherCubit extends Cubit<WeatherState> {
   WeatherCubit() : super(WeatherLoading());
+
+  PageController controller = PageController();
+  int pageIndex = 0;
 
   Position? pos;
 

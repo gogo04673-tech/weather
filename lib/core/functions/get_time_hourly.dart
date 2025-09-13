@@ -8,18 +8,19 @@ List<String> setHoursWithSunriseAndSunset(
   DateTime sunset = DateTime.parse(sunsetList[0]);
 
   List<String> result = [];
+  if (result.length < 26) {
+    for (int i = 0; i < totalHours; i++) {
+      int hour = (currentTime.hour + i) % 24;
+      result.add("${hour.toString().padLeft(2, "0")}:00\n");
+      if (hour == sunrise.hour) {
+        result.add(
+          "${sunrise.hour.toString().padLeft(2, "0")}:${sunrise.minute.toString().padLeft(2, "0")}",
+        );
+      }
 
-  for (int i = 0; i < totalHours; i++) {
-    int hour = (currentTime.hour + i) % 24;
-    result.add("${hour.toString().padLeft(2, "0")}:00\n");
-    if (hour == sunrise.hour) {
-      result.add(
-        "${sunrise.hour.toString().padLeft(2, "0")}:${sunrise.minute.toString().padLeft(2, "0")}",
-      );
-    }
-
-    if (hour == sunset.hour) {
-      result.add("${sunset.hour}:${sunset.minute}");
+      if (hour == sunset.hour) {
+        result.add("${sunset.hour}:${sunset.minute}");
+      }
     }
   }
 
@@ -73,13 +74,41 @@ List<int> weatherCodeList(
           weatherCode.insert(i, 203);
         }
       }
-      // print(int.tryParse(i.split(":")[0]) == sunrise.hour);
     }
   }
 
-  print("hours: $hours");
   return weatherCode;
 }
+
+// ! this is temperature function
+List<double> temperatureList(
+  List<String> hours,
+  List<double> temperature,
+  List<String> sunriseList,
+  List<String> sunsetList,
+) {
+  DateTime sunrise = DateTime.parse(sunriseList[0]);
+  DateTime sunset = DateTime.parse(sunsetList[0]);
+  if (temperature.length < 26) {
+    for (int i = 0; i < hours.length; i++) {
+      if (int.tryParse(hours[i].split(":")[1]) == sunrise.minute) {
+        if (!temperature.contains(202)) {
+          temperature.insert(i, 202);
+        }
+      }
+
+      if (int.tryParse(hours[i].split(":")[1]) == sunset.minute) {
+        if (!temperature.contains(203)) {
+          temperature.insert(i, 203);
+        }
+      }
+    }
+  }
+
+  return temperature;
+}
+
+
 
 
 

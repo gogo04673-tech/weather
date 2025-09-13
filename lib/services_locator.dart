@@ -4,6 +4,7 @@ import 'package:weather/data/weather/repositories/weather.dart';
 import 'package:weather/data/weather/sources/service.dart';
 import 'package:weather/domain/weather/repositories/weather.dart';
 import 'package:weather/domain/weather/usecases/get_weather.dart';
+import 'package:weather/domain/weather/usecases/get_weekly_weather.dart';
 
 final sl = GetIt.instance;
 
@@ -19,4 +20,5 @@ void setupServicesLocator() {
 
   // * ==============> Use Cases <============== * //
   sl.registerSingleton<GetWeatherUseCase>(GetWeatherUseCase());
+  sl.registerSingleton<GetWeeklyWeatherUseCase>(GetWeeklyWeatherUseCase());
 }

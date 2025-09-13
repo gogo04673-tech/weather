@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lottie/lottie.dart';
-import 'package:weather/core/configs/assets/app_lottie.dart';
 import 'package:weather/core/configs/theme/app_colors.dart';
 import 'package:weather/core/functions/get_temperature_feels_like_range.dart';
 import 'package:weather/core/functions/get_time_hourly.dart';
@@ -28,6 +26,7 @@ class WeatherHourly extends StatelessWidget {
 
         if (state is WeatherLoad) {
           List<String>? hours;
+
           return GestureDetector(
             onTap: () {
               // var result = setHoursWithSunriseAndSunset(
@@ -37,16 +36,14 @@ class WeatherHourly extends StatelessWidget {
               //   24,
               // );
               // print("result: ${result}");
-              if (hours != null) {
-                var result = weatherCodeList(
-                  hours!,
-                  state.weather.hourly!.weathercode,
-                  state.weather.daily!.sunrise,
-                  state.weather.daily!.sunset,
-                );
-                print("===============");
-                print(result);
-              }
+              var r = isDayTime(
+                context.read<TimeCubit>().timeNow!,
+                state.weather.daily!.sunrise[0],
+                state.weather.daily!.sunset[0],
+                hours ?? [],
+              );
+
+              print(r);
             },
             child: Container(
               height: 230,
@@ -90,7 +87,7 @@ class WeatherHourly extends StatelessWidget {
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       separatorBuilder: (context, index) =>
-                          const SizedBox(width: 5),
+                          const SizedBox(width: 10),
                       itemCount: state.weather.hourly!.temperature2M.length + 2,
                       itemBuilder: (context, i) {
                         return Column(
@@ -104,6 +101,7 @@ class WeatherHourly extends StatelessWidget {
                                   state.weather.daily!.sunset,
                                   24,
                                 );
+
                                 return Container(
                                   margin: const EdgeInsets.only(top: 2),
                                   //color: Colors.green,
@@ -116,14 +114,14 @@ class WeatherHourly extends StatelessWidget {
                                         153,
                                         177,
                                         187,
-                                      ).withOpacity(0.7),
+                                      ).withValues(alpha: .7),
                                     ),
                                   ),
                                 );
                               },
                             ),
 
-                            // image
+                            // ? Lottie || Image weather is here
                             if (hours != null)
                               Container(
                                 margin:
@@ -143,25 +141,17 @@ class WeatherHourly extends StatelessWidget {
                                   state.weather.daily!.sunset,
                                 ),
                               ),
-                            // Center(
-                            //   child: getWeatherLottie(
-                            //     weatherCodeList(
-                            //       hours!,
-                            //       state.weather.hourly!.weathercode,
-                            //       state.weather.daily!.sunrise,
-                            //       state.weather.daily!.sunset,
-                            //     )[i],
-                            //   ),
-                            // ),
 
-                            // text temperature
-                            // Text(
-                            //   "${state.weather.hourly!.temperature2M[i].round()}\u00B0",
-                            //   style: const TextStyle(
-                            //     color: Colors.white,
-                            //     fontWeight: FontWeight.bold,
-                            //   ),
-                            // ),
+                            // * text temperature is here
+                            if (hours != null)
+                              Text(
+                                //"${temperatureList(hours!, state.weather.hourly!.temperature2M, state.weather.daily!.sunrise, state.weather.daily!.sunset).length}\u00B0",
+                                "${state.weather.hourly!.temperature2M[i].round()}\u00B0",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                           ],
                         );
                       },
