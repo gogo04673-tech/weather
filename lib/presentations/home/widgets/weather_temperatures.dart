@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
+import 'package:weather/common/widgets/animation/page/animated.dart';
+import 'package:weather/core/configs/assets/app_lottie.dart';
 import 'package:weather/core/functions/get_temperature_feels_like_range.dart';
 import 'package:weather/core/functions/weather_code.dart';
 import 'package:weather/presentations/home/bloc/weather_cubit.dart';
@@ -72,6 +75,15 @@ class WeatherTemperatures extends StatelessWidget {
                       ),
                     ),
                   ),
+
+                  // Lottie
+                  Positioned(
+                    right: 90,
+                    top: -2,
+                    child: Lottie.asset(AppLottie.sunny, width: 30),
+                  ),
+
+                  const AnimatedPage(),
                 ],
               ),
             ),

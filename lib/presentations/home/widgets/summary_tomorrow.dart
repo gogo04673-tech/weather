@@ -185,6 +185,7 @@ class MyPageView extends StatelessWidget {
       ),
       child: PageView.builder(
         controller: context.watch<WeatherCubit>().controller,
+
         onPageChanged: (i) {
           context.read<WeatherCubit>().pageIndex = i;
         },

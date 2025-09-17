@@ -18,7 +18,7 @@ class SplashPage extends StatelessWidget {
       body: BlocListener<SplashCubit, SplashState>(
         listener: (context, state) {
           if (state is GoToHomePage) {
-            AppNavigator.pushReplacement(context, const HomePage());
+            AppNavigator.pushReplacement(context, HomePage());
           }
         },
         child: SafeArea(child: Center(child: Lottie.asset(AppLottie.windy))),

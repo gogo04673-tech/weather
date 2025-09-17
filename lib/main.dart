@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weather/core/configs/theme/app_theme.dart';
 import 'package:weather/presentations/splash/bloc/splash_cubit.dart';
 import 'package:weather/presentations/splash/pages/splash.dart';
+import 'package:weather/presentations/test/pages/test.dart';
 import 'package:weather/services_locator.dart';
 
 void main() {
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: AppTheme.appTheme,
-        home: const SplashPage(),
+        home: const SplashPage(), // const TestPage(), //
       ),
     );
   }

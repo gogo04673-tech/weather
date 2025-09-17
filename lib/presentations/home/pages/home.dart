@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:weather/common/widgets/animation/bloc/animated_cubit.dart';
 import 'package:weather/common/widgets/appbar/app_bar.dart';
 import 'package:weather/core/configs/theme/app_colors.dart';
 import 'package:weather/presentations/home/bloc/time_cubit.dart';
@@ -12,14 +13,20 @@ import 'package:weather/presentations/home/widgets/weather_hourly.dart';
 import 'package:weather/presentations/home/widgets/weather_temperatures.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  HomePage({super.key});
+  final ScrollController _controller = ScrollController();
 
   @override
   Widget build(BuildContext context) {
+    _controller.addListener(() {
+      
+      print("scroll: ${_controller.offset}");
+    });
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => WeatherCubit()..getData()),
         BlocProvider(create: (context) => WeeklyCubit()..getData()),
+        BlocProvider(create: (context) => AnimatedCubit()),
         BlocProvider(create: (context) => TimeCubit()),
       ],
       child: Scaffold(
@@ -58,30 +65,35 @@ class HomePage extends StatelessWidget {
           ),
         ),
 
-        body: const SafeArea(
+        body: SafeArea(
           maintainBottomViewPadding: true,
           right: true,
           left: true,
-          minimum: EdgeInsets.symmetric(horizontal: 10),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                // * Temperatures with weather code is here
-                WeatherTemperatures(),
-
-                // * Weather 24 hour in future
-                WeatherHourly(),
-
-                // Tomorrow OutLook's
-                // SummaryTomorrow(),
-                MyPageView(),
-
-                // This weekly days
-                WeatherDays(),
-              ],
-            ),
-          ),
+          minimum: const EdgeInsets.symmetric(horizontal: 10),
+          child: _scroll(),
         ),
+      ),
+    );
+  }
+
+  Widget _scroll() {
+    return SingleChildScrollView(
+      controller: _controller,
+      child: const Column(
+        children: [
+          // * Temperatures with weather code is here
+          WeatherTemperatures(),
+
+          // * Weather 24 hour in future
+          WeatherHourly(),
+
+          // Tomorrow OutLook's
+          // SummaryTomorrow(),
+          MyPageView(),
+
+          // This weekly days
+          WeatherDays(),
+        ],
       ),
     );
   }
